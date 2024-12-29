@@ -16,7 +16,7 @@ const NO_TEXT_ERROR_CODE = 1;
 const INTERNAL_ERROR_CODE = 2;
 const FILE_NOT_FOUND_ERROR_CODE = 3;
 
-app.get("/analyze", async (req, res) => {
+app.post("/analyze", async (req, res) => {
   const {fileName} = req.body;
 
   const fileURL = `gs://${BUCKET_NAME}/${fileName}`;
