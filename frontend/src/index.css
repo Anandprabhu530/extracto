@@ -1,3 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --color2: #b071ff;
+  --color1: #ff9c71;
+}
+
+body {
+  margin: 0; /* Ensure no default margin is applied */
+  padding: 0; /* Ensure no default padding */
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.app-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.navbar,
+.maincontent {
+  position: relative; /* Ensure content stays on top */
+  z-index: 10;
+}
+
+.maincontent {
+  backdrop-filter: blur(100px);
+}
