@@ -7,12 +7,12 @@ const app = express();
 app.use(express.json());
 
 const server = http.createServer(app);
-const wss = new WebSocketServer({server});
+const wss = new WebSocketServer({server, maxPayload: 16 * 1024 * 1024});
 
 wss.on("connection", async (ws) => {
   ws.on("message", async (message) => {
     const {file} = JSON.parse(message);
-    console.log(typeof file);
+
     const response = await fetch(process.env.PROCESS_URL, {
       method: "POST",
       body: JSON.stringify({fileName: file}),
@@ -45,7 +45,8 @@ wss.on("connection", async (ws) => {
         errorCode = 4;
         break;
     }
-    ws.close(1000, JSON.stringify({errorCode: errorCode, data: data}));
+    ws.send(JSON.stringify({errorCode: errorCode, data: data}));
+    ws.close(1000, "Ending Connection");
   });
 });
 
