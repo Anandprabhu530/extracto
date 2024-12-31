@@ -1,0 +1,16 @@
+runtime: custom
+env: flex
+
+instance_class: F2
+
+env_variables:
+  PROCESS_URL: https://image-processing-docker-image-188731422735.us-central1.run.app/analyze
+
+handlers:
+  - url: /stylesheets
+    static_dir: stylesheets
+
+  - url: /.*
+    secure: always
+    redirect_http_response_code: 301
+    script: auto
