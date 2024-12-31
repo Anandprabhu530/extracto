@@ -11,8 +11,6 @@ export async function uploadImage(file) {
     inputBucketName: "text-extraction-raw-bucket",
   });
 
-  console.log(response);
-
   await fetch(response?.data?.url, {
     method: "PUT",
     body: file,

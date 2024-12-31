@@ -1,12 +1,13 @@
 import {useState, useCallback} from "react";
 import {useDropzone} from "react-dropzone";
 import {uploadImage} from "../libs/functions";
-import WebSocket from "ws";
 
 const MainContent = () => {
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [text, setText] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [extracting, setExtracting] = useState(false);
 
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     if (rejectedFiles.length > 0) {
@@ -38,32 +39,34 @@ const MainContent = () => {
       return;
     }
 
-    setLoading(true);
+    setUploading(true);
     const response = await uploadImage(file);
+    setUploading(false);
     // response.data.url --- response.data.fileName
 
+    setExtracting(true);
     if (!response.data.fileName) {
+      setError("Something went wrong.");
       return;
     }
-    const socketUrl = "wss://example.com/socket";
 
+    const socketUrl = "ws://localhost:8080";
     const socket = new WebSocket(socketUrl);
+
     socket.onopen = () => {
-      console.log("WebSocket connection established");
       socket.send(JSON.stringify({file: response.data.fileName}));
     };
+
     socket.onmessage = (event) => {
-      console.log("Message from server:", event.data);
-    };
-    socket.onclose = (event) => {
-      console.log("WebSocket connection closed:", event);
-    };
-    socket.onerror = (error) => {
-      setError(error);
-      console.log("WebSocket Error:", error);
+      const response = JSON.parse(event.data);
+      if (event.data !== null) {
+        setText(response.data);
+      } else {
+        setError("No Text in image or error Occured");
+      }
     };
 
-    setLoading(false);
+    setExtracting(false);
     return () => {
       socket.close();
     };
@@ -75,50 +78,59 @@ const MainContent = () => {
         Quickly extract text from photos, handwritten notes, and screenshots by
         using this image to text converter.
       </div>
-      <div className="w-[300px] lg:w-[600px] flex items-center relative justify-center h-[180px]">
-        <div className="mt-10">
-          <div
-            {...getRootProps()}
-            className="border-2 border-dashed shadow-xl flex items-center justify-center border-gray-500 rounded-lg p-4 text-center cursor-pointer w-[300px] lg:w-[600px] h-[200px]"
-          >
-            <input {...getInputProps()} />
-            {isDragActive ? (
-              <div className="text-white">Drop the file here ...</div>
-            ) : (
-              <div className="font-semibold text-lg text-white">
-                Drop your file here
-                <div>OR</div>
-                <div>
+      {text ? (
+        <div className="text-xl text-white w-[800px] p-4 border-2 border-white rounded-lg">
+          {text}
+        </div>
+      ) : (
+        <div className="w-[300px] lg:w-[600px] flex items-center relative justify-center h-[180px]">
+          <div className="mt-10">
+            <div
+              {...getRootProps()}
+              className="border-2 border-dashed shadow-xl flex items-center justify-center border-gray-500 rounded-lg p-4 text-center cursor-pointer w-[300px] lg:w-[600px] h-[200px]"
+            >
+              <input {...getInputProps()} />
+              {isDragActive ? (
+                <div className="text-white">Drop the file here ...</div>
+              ) : (
+                <div className="font-semibold text-lg text-white">
+                  Drop your file here
+                  <div className="italic font-normal">OR</div>
+                  <div>
+                    <button
+                      type="button"
+                      className="text-blue-500 underline underline-offset-1"
+                      onClick={open}
+                    >
+                      Upload File
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            {file && (
+              <div className="mt-4">
+                <div className="text-sm text-gray-600">
+                  Selected file: {file.name}
+                </div>
+
+                <div className="w-full flex items-center justify-center">
                   <button
-                    type="button"
-                    className="text-blue-500 underline underline-offset-1"
-                    onClick={open}
+                    onClick={handleUpload}
+                    className="mt-4 px-4 py-1 text-lg font-normal bg-white text-black rounded hover:bg-neutral-300 transition duration-200"
                   >
-                    Upload File
+                    {uploading && "Uploading"}
+                    {extracting && "Extracting"}
+                    {!uploading && !extracting && "Extract"}
                   </button>
                 </div>
               </div>
             )}
-          </div>
-          {file && (
-            <div className="mt-4">
-              <div className="text-sm text-gray-600">
-                Selected file: {file.name}
-              </div>
 
-              <div className="w-full flex items-center justify-center">
-                <button
-                  onClick={handleUpload}
-                  className="mt-4 px-4 py-1 text-lg font-normal bg-white text-black rounded hover:bg-neutral-300 transition duration-200"
-                >
-                  {loading ? "Converting" : "Convert"}
-                </button>
-              </div>
-            </div>
-          )}
-          {error && <div className="mt-2 text-red-500 text-sm">{error}</div>}
+            {error && <div className="mt-2 text-red-500 text-sm">{error}</div>}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
