@@ -4,7 +4,7 @@ env: flex
 instance_class: F2
 
 env_variables:
-  PROCESS_URL: https://image-processing-docker-image-188731422735.us-central1.run.app/analyze
+  PROCESS_URL: URL
 
 handlers:
   - url: /stylesheets
