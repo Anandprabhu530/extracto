@@ -7,7 +7,7 @@ const Navbar = () => {
             EXTRACTO
           </div>
           <a
-            href="https://github.com/"
+            href="https://github.com/anandprabhu530/extracto"
             target="__blank"
             className="p-2 border border-neutral-400 rounded-lg"
           >

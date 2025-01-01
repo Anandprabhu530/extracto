@@ -49,8 +49,8 @@ const MainContent = () => {
       setError("Something went wrong.");
       return;
     }
+    const socketUrl = import.meta.env.VITE_WEBSOCKET_URL;
 
-    const socketUrl = "ws://localhost:8080";
     const socket = new WebSocket(socketUrl);
 
     socket.onopen = () => {
@@ -59,13 +59,16 @@ const MainContent = () => {
 
     socket.onmessage = (event) => {
       const response = JSON.parse(event.data);
-      if (event.data !== null) {
+      if (response.data !== null) {
         setText(response.data);
+      } else if (response.errorCode === 1) {
+        setError("No Text in given Image");
       } else {
-        setError("No Text in image or error Occured");
+        setError("An Error Occured");
       }
     };
 
+    setFile(null);
     setExtracting(false);
     return () => {
       socket.close();
@@ -79,7 +82,7 @@ const MainContent = () => {
         using this image to text converter.
       </div>
       {text ? (
-        <div className="text-xl text-white w-[800px] p-4 border-2 border-white rounded-lg">
+        <div className="text-xl text-white w-[85%] md:w-[500px] lg:w-[800px] p-4 border-2 border-white rounded-lg">
           {text}
         </div>
       ) : (
