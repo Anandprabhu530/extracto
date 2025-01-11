@@ -30,15 +30,6 @@ Extracto is a web application that allows users to easily extract text from imag
 - Deployed on Google Cloud Run for a fully serverless solution that scales automatically based on incoming requests.
 - Supports seamless horizontal scaling, making it suitable for high-volume traffic.
 
-## Continuous Integration and Delivery (CI/CD) with GitHub Actions:
-
-- GitHub Actions automates the build and deployment process for the backend.
-- Every change to the backend code triggers an automated pipeline, ensuring fast and reliable deployments.
-
-## Source Control with GitHub:
-
-- The project uses GitHub for version control, allowing for efficient collaboration and management of the codebase.
-- Features branch management, pull requests, and code reviews to maintain quality throughout the development process.
 
 ## How It Works
 
